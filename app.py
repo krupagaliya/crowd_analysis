@@ -14,7 +14,8 @@ def input():
 @app.route('/submit', methods=['GET', 'POST'])
 def submit():
     if request.method == 'GET':
-        data = request.files('myfile1')
+        data = request.files.get('myfile1','')
+
         print("only data", data)
         data.save("data", data.filename)
         print("Image saved")
