@@ -58,6 +58,7 @@ def submit():
         return render_template('index.html', faceDetected=faceDetected, num_faces=num_faces, image_to_show=to_send,
                                init=True)
 
+
 # ----------------------------------------------------------------------------------
 # Detect faces using OpenCV
 # ----------------------------------------------------------------------------------
