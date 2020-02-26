@@ -11,7 +11,9 @@
 body,h1 {font-family: "Raleway", sans-serif}
 body, html {height: 100%}
 .bgimg {
-  background-image: url('https://3dandroidwallpaper.com/wp-content/uploads/2019/09/Gradient-Backgrounds-For-Android.jpg');
+  background-image: url(
+  'https://3dandroidwallpaper.com/wp-content/uploads/2019/09/Gradient-Backgrounds-For-Android.jpg'
+  );
   min-height: 100%;
   background-position: center;
   background-size: cover;
@@ -24,9 +26,9 @@ body, html {height: 100%}
 
 <div class="bgimg">
     <div class="w3-large w3-center">
-<form action="{{ url_for('submit') }}" method="get">
+<form action="/submit" method="post" enctype="multipart/form-data">
   <label for="myfile">Select a file:</label>
-  <input type="file" id="myfile" name="myfile1"> <br><br>
+  <input type="file" id="file1" name="file1"> <br><br>
   <input type="submit">
 </form>
         </div>
