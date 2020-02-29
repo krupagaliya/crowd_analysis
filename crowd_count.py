@@ -12,15 +12,15 @@ from tensorflow.python.keras.utils import losses_utils
 
 class Counting:
 
-    def __init__(self):
+    def __init__(self, model_file, weight_file):
         self.mse = tf.keras.losses.MeanSquaredError(reduction=losses_utils.ReductionV2.SUM)
         self.mae = tf.keras.losses.MeanAbsoluteError(reduction=losses_utils.ReductionV2.SUM)
 
-        self.json_file = open('files/model_reduce_filter.json', 'r')
+        self.json_file = open(model_file, 'r')
         self.loaded_model_json = self.json_file.read()
         self.json_file.close()
         self.loaded_model = model_from_json(self.loaded_model_json)
-        self.loaded_model.load_weights("files/model_weights_1_rmsprop.h5")
+        self.loaded_model.load_weights(weight_file)
 
 
     def create_img(self, path):
@@ -37,18 +37,33 @@ class Counting:
         # print(im.shape)
         # im = np.expand_dims(im,axis  = 0)
         return im
+    def predict_img(self,img_path):
+        input = self.create_img(img_path)
+        x = np.asarray(input)
+        input = np.expand_dims(x, axis=0)
+        print(input.shape)
+        output = self.loaded_model.predict(input)
+        output_s = np.squeeze(output)
+        return output_s
 
-path = "data/IMG_20171020_083226809.jpg"
-input = create_img(path)
-x = np.asarray(input)
-input = np.expand_dims(x, axis=0)
-print(input.shape)
-output = loaded_model.predict(input)
-output_s = np.squeeze(output)
+    def show_result(self, input_img):
+        from matplotlib import cm as c
+        import matplotlib.pyplot as plt
+        plt.imshow(input_img, cmap=c.jet)
+        count = np.sum(input_img, dtype=np.float32)
+        print("Predicted Count:-", count)
+        plt.savefig('output_image.png')
+        plt.show()
+        return count
 
-from matplotlib import cm as c
-import matplotlib.pyplot as plt
-plt.imshow(output_s, cmap = c.jet)
-print("Predicted Count:-",np.sum(output,dtype=np.float32))
-plt.savefig('output_image.png')
-plt.show()
+
+if __name__ == '__main__':
+    model_file = "files/model_reduce_filter.json"
+    weight_file = "files/model_weights_1_rmsprop.h5"
+    obj = Counting(model_file, weight_file)
+    path = "data/IMG_20171020_083226809.jpg"
+    result = obj.predict_img(path)
+    obj.show_result(result)
+
+
+

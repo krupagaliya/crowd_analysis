@@ -2,3 +2,4 @@
 data/*.jpg
 files/*.json
 files/*.h5
+__pycache__/

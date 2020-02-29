@@ -29,8 +29,9 @@ def submit():
         data = request.files["file1"]
         filename = secure_filename(data.filename)
         data.save(os.path.join(config["IMAGE_UPLOADS"], filename))
-        path = os.path.join(config["IMAGE_UPLOADS"], filename)
-        faces = detect_persons(path)
+        image = cv2.imread(os.path.join(config["IMAGE_UPLOADS"], filename))
+        print(image.shape)
+        faces = detect_faces(image)
 
         if len(faces) == 0:
             faceDetected = False
@@ -61,13 +62,34 @@ def submit():
 # ----------------------------------------------------------------------------------
 # Detect faces using OpenCV
 # ----------------------------------------------------------------------------------
-def detect_persons(img_path):
-    model_file = "files/model_reduce_filter.json"
-    weight_file = "files/model_weights_1_rmsprop.h5"
-    obj = Counting(model_file, weight_file)
-    result = obj.predict_img(img_path)
-    count = obj.show_result(result)
-    return str(count)
+def detect_faces(img):
+    '''Detect face in an image'''
+
+    faces_list = []
+
+    # Convert the test image to gray scale (opencv face detector expects gray images)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Load OpenCV face detector (LBP is faster)
+    face_cascade = cv2.CascadeClassifier('files/lbpcascade_frontalface.xml')
+
+    # Detect multiscale images (some images may be closer to camera than others)
+    # result is a list of faces
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5)
+
+    # If not face detected, return empty list
+    if len(faces) == 0:
+        return faces_list
+
+    for i in range(0, len(faces)):
+        (x, y, w, h) = faces[i]
+        face_dict = {}
+        face_dict['face'] = gray[y:y + w, x:x + h]
+        face_dict['rect'] = faces[i]
+        faces_list.append(face_dict)
+
+    # Return the face image area and the face rectangle
+    return faces_list
 
 
 def draw_rectangle(img, rect):
