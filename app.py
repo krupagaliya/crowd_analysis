@@ -4,6 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 import base64
 import cv2
+import numpy as np
 from crowd_count import Counting
 
 config = {}
@@ -30,22 +31,16 @@ def submit():
         filename = secure_filename(data.filename)
         data.save(os.path.join(config["IMAGE_UPLOADS"], filename))
         path = os.path.join(config["IMAGE_UPLOADS"], filename)
-        faces = detect_persons(path)
-
-        if len(faces) == 0:
+        result = detect_persons(path)
+        people_count = np.sum(result, dtype=np.float32)
+        if len(people_count) == 0:
             faceDetected = False
             num_faces = 0
             to_send = ''
         else:
             faceDetected = True
-            num_faces = len(faces)
+            num_faces = len(people_count)
 
-            # Draw a rectangle
-            for item in faces:
-                draw_rectangle(image, item['rect'])
-
-            # Save
-            # cv2.imwrite(filename, image)
 
             # In memory
             image_content = cv2.imencode('.jpg', image)[1].tostring()
@@ -66,8 +61,7 @@ def detect_persons(img_path):
     weight_file = "files/model_weights_1_rmsprop.h5"
     obj = Counting(model_file, weight_file)
     result = obj.predict_img(img_path)
-    count = obj.show_result(result)
-    return str(count)
+    return result
 
 
 def draw_rectangle(img, rect):
