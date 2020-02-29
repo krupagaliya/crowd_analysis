@@ -6,6 +6,8 @@ import base64
 import cv2
 import numpy as np
 from crowd_count import Counting
+from matplotlib import cm as c
+import matplotlib.pyplot as plt
 
 config = {}
 config["IMAGE_UPLOADS"] = "data"
@@ -33,29 +35,26 @@ def submit():
         path = os.path.join(config["IMAGE_UPLOADS"], filename)
         result = detect_persons(path)
         people_count = np.sum(result, dtype=np.float32)
-        if len(people_count) == 0:
+        print("People count is ", people_count)
+        if people_count == 0:
             faceDetected = False
             num_faces = 0
             to_send = ''
         else:
             faceDetected = True
-            num_faces = len(people_count)
-
-
+            num_faces = int(people_count)
             # In memory
+            image = plt.imshow(result, cmap=c.jet)
+            plt.savefig('data/output_image.jpg')
+            image = cv2.imread('data/output_image.jpg')
             image_content = cv2.imencode('.jpg', image)[1].tostring()
             encoded_image = base64.encodestring(image_content)
             to_send = 'data:image/jpg;base64, ' + str(encoded_image, 'utf-8')
-            print("imshow", type(to_send))
-            print(to_send)
-
+            print("Final count is ", num_faces)
         return render_template('index.html', faceDetected=faceDetected, num_faces=num_faces, image_to_show=to_send,
                                init=True)
 
 
-# ----------------------------------------------------------------------------------
-# Detect faces using OpenCV
-# ----------------------------------------------------------------------------------
 def detect_persons(img_path):
     model_file = "files/model_reduce_filter.json"
     weight_file = "files/model_weights_1_rmsprop.h5"
@@ -71,4 +70,5 @@ def draw_rectangle(img, rect):
 
 
 if __name__ == '__main__':
+
     app.run(debug=True)

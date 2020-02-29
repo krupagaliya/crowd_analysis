@@ -61,7 +61,7 @@ if __name__ == '__main__':
     model_file = "files/model_reduce_filter.json"
     weight_file = "files/model_weights_1_rmsprop.h5"
     obj = Counting(model_file, weight_file)
-    path = "data/IMG_20171020_083226809.jpg"
+    path = "data/img1.jpg"
     result = obj.predict_img(path)
     obj.show_result(result)
 
