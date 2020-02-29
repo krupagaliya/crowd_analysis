@@ -71,7 +71,7 @@ def detect_faces(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Load OpenCV face detector (LBP is faster)
-    face_cascade = cv2.CascadeClassifier('opencv-files/lbpcascade_frontalface.xml')
+    face_cascade = cv2.CascadeClassifier('files/lbpcascade_frontalface.xml')
 
     # Detect multiscale images (some images may be closer to camera than others)
     # result is a list of faces
