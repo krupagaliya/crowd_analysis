@@ -1,5 +1,8 @@
 .idea/
 data/*.jpg
+data/*.png
+data/*.jpeg
 files/*.json
 files/*.h5
+__pycache__
 __pycache__/
