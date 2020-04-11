@@ -1,14 +1,9 @@
 from keras.models import model_from_json
-import os
 import cv2
-import glob
-import h5py
-import pandas as pd
-import scipy.io as io
-from PIL import Image
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.keras.utils import losses_utils
+
 
 class Counting:
 
@@ -27,11 +22,14 @@ class Counting:
         im = cv2.imread(path)
         im = np.array(im)
         im = im / 255.0
+        # cv2.imwrite('data/IMG_20171020_083226809.jpg', im)
 
         im[:, :, 0] = (im[:, :, 0] - 0.485) / 0.229
         im[:, :, 1] = (im[:, :, 1] - 0.456) / 0.224
         im[:, :, 2] = (im[:, :, 2] - 0.406) / 0.225
 
+        # print(im.shape)
+        # im = np.expand_dims(im,axis  = 0)
         return im
 
     def predict_img(self,img_path):
@@ -55,12 +53,10 @@ class Counting:
 
 
 if __name__ == '__main__':
-    model_file = "files/model_reduce_filter.json"
-    weight_file = "files/model_weights_1_rmsprop.h5"
+    model_file = "SAnet/SANet.json"
+    weight_file = "SAnet/SANet_best.hdf5"
+
     obj = Counting(model_file, weight_file)
     path = "data/img1.png"
     result = obj.predict_img(path)
     obj.show_result(result)
-
-
-
